@@ -3,10 +3,10 @@ import { VStack } from "@chakra-ui/layout";
 import { Flex, Box, Avatar, Text, Button } from "@chakra-ui/react";
 import {
   RiCalendarLine,
+  RiInstagramLine,
   RiLink,
   RiMapPinLine,
   RiSuitcaseLine,
-  RiUserLocationLine,
 } from "@remixicon/react";
 import { Link } from "react-router-dom";
 
@@ -70,6 +70,11 @@ const UserHeader = () => {
         <Flex gap={2} alignItems={"center"}>
           <RiCalendarLine color={"gray"} />
           <Text color={"gray"}>Joined in March 2024</Text>
+        </Flex>
+        <Flex>
+          <Box>
+            <RiInstagramLine size={24} cursor={"pointer"} />
+          </Box>
         </Flex>
       </Flex>
     </VStack>
