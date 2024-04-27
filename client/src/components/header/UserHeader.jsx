@@ -1,16 +1,37 @@
 import React from "react";
 import { VStack } from "@chakra-ui/layout";
-import { Flex, Box, Avatar, Text, Button } from "@chakra-ui/react";
+import {
+  Flex,
+  Box,
+  Avatar,
+  Text,
+  Button,
+  MenuButton,
+  Menu,
+  Portal,
+  MenuList,
+  MenuItem,
+  useToast,
+} from "@chakra-ui/react";
 import {
   RiCalendarLine,
   RiInstagramLine,
   RiLink,
+  RiLinksLine,
   RiMapPinLine,
   RiSuitcaseLine,
 } from "@remixicon/react";
 import { Link } from "react-router-dom";
 
 const UserHeader = () => {
+  const toast = useToast();
+  const copyURL = () => {
+    const currentUrl = window.location.href;
+    navigator.clipboard.writeText(currentUrl).then(() => {
+      toast({ description: "Copy to Clipboard", duration: 3000 });
+    });
+  };
+
   return (
     <VStack gap={4} alignItems="start">
       <Flex justifyContent={"space-between"} w={"full"} alignItems={"center"}>
@@ -75,7 +96,28 @@ const UserHeader = () => {
           <Box>
             <RiInstagramLine size={24} cursor={"pointer"} />
           </Box>
+          <Box>
+            <Menu>
+              <MenuButton>
+                <RiLinksLine size={24} cursor={"pointer"} />
+              </MenuButton>
+              <Portal>
+                <MenuList bg={"gray.dark"}>
+                  <MenuItem bg={"gray.dark"} onClick={copyURL}>
+                    Copy Link
+                  </MenuItem>
+                </MenuList>
+              </Portal>
+            </Menu>
+          </Box>
         </Flex>
+      </Flex>
+
+      <Flex w={"full"}>
+        <Flex flex={1} >
+          <Text>Tweets</Text>
+        </Flex>
+        <Flex flex={1}></Flex>
       </Flex>
     </VStack>
   );
