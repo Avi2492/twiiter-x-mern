@@ -7,7 +7,11 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Regular function to run in between before you do anything between req and response
 app.use(express.json());
+
+// to parse data urlencoded
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1/auth", authRoutes);
 
