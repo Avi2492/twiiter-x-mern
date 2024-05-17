@@ -45,6 +45,9 @@ const LoginPage = () => {
 
     onSuccess: () => {
       toast.success("User Logged In Success!");
+
+      // refetch the auth user to update ui
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
     },
   });
 
