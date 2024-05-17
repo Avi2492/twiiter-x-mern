@@ -22,7 +22,13 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Regular function to run in between before you do anything between req and response
-app.use(express.json());
+app.use(
+  express.json({
+    limit: "5mb",
+  })
+);
+
+// Above limit shouldnot be too high so that prevent DOS error
 
 // to parse data urlencoded
 app.use(express.urlencoded({ extended: true }));
