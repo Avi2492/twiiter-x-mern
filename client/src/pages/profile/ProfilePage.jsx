@@ -1,12 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-
 import Posts from "../../components/common/Posts";
 import ProfileHeaderSkeleton from "../../components/skeletons/ProfileHeaderSkeleton";
 import EditProfileModal from "./EditProfileModal";
-
 import { POSTS } from "../../utils/db/dummy";
-
 import {
   RiArrowLeftLine,
   RiCalendarLine,
@@ -14,8 +11,12 @@ import {
   RiEditLine,
   RiExternalLinkLine,
 } from "@remixicon/react";
-import { useQuery } from "@tanstack/react-query";
 import { formatMemberSinceDate } from "../../utils/date";
+import useFollow from "../../hooks/useFollow";
+import LoadingSpinner from "../../components/common/LoadingSpinner";
+
+import useUpdateUserProfile from "../../hooks/useUpdateUserProfile";
+import { useQuery } from "@tanstack/react-query";
 
 const ProfilePage = () => {
   const [coverImg, setCoverImg] = useState(null);
@@ -26,31 +27,10 @@ const ProfilePage = () => {
   const profileImgRef = useRef(null);
 
   const { username } = useParams();
-  const isMyProfile = true;
 
-  // const user = {
-  //   _id: "1",
-  //   fullName: "Avinash Pandey",
-  //   username: "avi2492",
-  //   profileImg: "/avatars/avinash.avif",
-  //   coverImg: "/cover.png",
-  //   bio: "Software Engineer @Appcrunk Technologies",
-  //   link: "https://youtube.com/@spherisoft",
-  //   following: ["1", "2", "3"],
-  //   followers: ["1", "2", "3"],
-  // };
+  const { follow, isPending } = useFollow();
 
-  const handleImgChange = (e, state) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        state === "coverImg" && setCoverImg(reader.result);
-        state === "profileImg" && setProfileImg(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  const { data: authUser } = useQuery({ queryKey: ["authUser"] });
 
   const {
     data: user,
@@ -75,6 +55,24 @@ const ProfilePage = () => {
       }
     },
   });
+
+  const handleImgChange = (e, state) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        state === "coverImg" && setCoverImg(reader.result);
+        state === "profileImg" && setProfileImg(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const isMyProfile = authUser._id === user?._id;
+
+  const amIfollowing = authUser?.following.includes(user?._id);
+
+  const { updateProfile, isUpdatingProfile } = useUpdateUserProfile();
 
   useEffect(() => {
     refetch();
@@ -154,21 +152,27 @@ const ProfilePage = () => {
                 </div>
               </div>
               <div className="flex justify-end px-4 mt-5">
-                {isMyProfile && <EditProfileModal />}
+                {isMyProfile && <EditProfileModal authUser={authUser} />}
                 {!isMyProfile && (
                   <button
                     className="btn btn-outline rounded-full btn-sm"
-                    onClick={() => alert("Followed successfully")}
+                    onClick={() => follow(user?._id)}
                   >
-                    Follow
+                    {isPending && <LoadingSpinner size="sm" />}
+                    {!isPending && amIfollowing && "Unfollow"}
+                    {!isPending && !amIfollowing && "Follow"}
                   </button>
                 )}
                 {(coverImg || profileImg) && (
                   <button
                     className="btn btn-primary rounded-full btn-sm text-white px-4 ml-2"
-                    onClick={() => alert("Profile updated successfully")}
+                    onClick={async () => {
+                      await updateProfile({ coverImg, profileImg });
+                      setCoverImg(null);
+                      setProfileImg(null);
+                    }}
                   >
-                    Update
+                    {isUpdatingProfile ? <LoadingSpinner size="sm" /> : "Save"}
                   </button>
                 )}
               </div>
