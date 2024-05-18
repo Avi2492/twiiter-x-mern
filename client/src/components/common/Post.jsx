@@ -15,7 +15,7 @@ const Post = ({ post }) => {
   const [comment, setComment] = useState("");
   const { data: authUser } = useQuery({ queryKey: ["authUser"] });
   const queryClient = useQueryClient();
-  const { mutate: deletePost, isPending } = useMutation({
+  const { mutate: deletePost, isPending: isDeleting } = useMutation({
     mutationFn: async () => {
       try {
         const res = await fetch(`/api/v1/posts/${post._id}`, {
@@ -40,8 +40,45 @@ const Post = ({ post }) => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
   });
+
+  const { mutate: likedPost, isPending: isLiking } = useMutation({
+    mutationFn: async () => {
+      try {
+        const res = await fetch(`/api/v1/posts/like/${post._id}`, {
+          method: "POST",
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Something went wrong!");
+        }
+
+        return data;
+      } catch (error) {
+        throw new Error(error.message);
+      }
+    },
+
+    onSuccess: (updatedLikes) => {
+      toast.success("Post Liked Success!");
+
+      queryClient.setQueryData(["posts"], (oldData) => {
+        return oldData.map((p) => {
+          if (p._id === post._id) {
+            return { ...p, likes: updatedLikes };
+          }
+          return p;
+        });
+      });
+    },
+    onError: () => {
+      toast.error("Not Liked");
+    },
+  });
+
   const postOwner = post.user;
-  const isLiked = false;
+  const isLiked = post.likes.includes(authUser._id);
 
   const isMyPost = authUser._id === post.user._id;
 
@@ -57,7 +94,10 @@ const Post = ({ post }) => {
     e.preventDefault();
   };
 
-  const handleLikePost = () => {};
+  const handleLikePost = () => {
+    if (isLiking) return;
+    likedPost();
+  };
 
   return (
     <>
@@ -84,13 +124,13 @@ const Post = ({ post }) => {
             </span>
             {isMyPost && (
               <span className="flex justify-end flex-1">
-                {!isPending && (
+                {!isDeleting && (
                   <RiDeleteBin7Fill
                     className="cursor-pointer hover:text-red-500"
                     onClick={handleDeletePost}
                   />
                 )}
-                {isPending && <LoadingSpinner size="sm" />}
+                {isDeleting && <LoadingSpinner size="sm" />}
               </span>
             )}
           </div>
@@ -191,10 +231,11 @@ const Post = ({ post }) => {
                 className="flex gap-1 items-center group cursor-pointer"
                 onClick={handleLikePost}
               >
-                {!isLiked && (
+                {isLiking && <LoadingSpinner size="sm" />}
+                {!isLiked && !isLiking && (
                   <RiHeart3Line className="w-4 h-4 cursor-pointer text-slate-500 group-hover:text-pink-500" />
                 )}
-                {isLiked && (
+                {isLiked && !isLiking && (
                   <RiHeart3Line className="w-4 h-4 cursor-pointer text-pink-500 " />
                 )}
 
