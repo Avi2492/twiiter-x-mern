@@ -5,8 +5,8 @@
   "main": "server/server.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon server/server.js",
-    "start": "node server/server.js",
+    "dev": "cross-env NODE_ENV=development nodemon server/server.js",
+    "start": "cross-env NODE_ENV=production node server/server.js",
     "build": "npm install && npm install --prefix client && npm run build --prefix client"
   },
   "keywords": [],
@@ -23,6 +23,7 @@
     "mongoose": "^8.3.2"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "nodemon": "^3.1.0"
   }
 }
