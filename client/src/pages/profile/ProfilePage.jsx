@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import Posts from "../../components/common/Posts";
 import ProfileHeaderSkeleton from "../../components/skeletons/ProfileHeaderSkeleton";
 import EditProfileModal from "./EditProfileModal";
-import { POSTS } from "../../utils/db/dummy";
+// import { POSTS } from "../../utils/db/dummy";
 import {
   RiArrowLeftLine,
   RiCalendarLine,
@@ -96,14 +96,14 @@ const ProfilePage = () => {
                 <div className="flex flex-col">
                   <p className="font-bold text-lg">{user?.fullName}</p>
                   <span className="text-sm text-slate-500">
-                    {POSTS?.length} posts
+                    {Posts?.length} posts
                   </span>
                 </div>
               </div>
               {/* COVER IMG */}
               <div className="relative group/cover">
                 <img
-                  src={coverImg || user?.coverImg || "/cover.png"}
+                  src={coverImg || user?.coverImg || ""}
                   className="h-52 w-full object-cover"
                   alt="cover image"
                 />
@@ -134,13 +134,9 @@ const ProfilePage = () => {
                 <div className="avatar absolute -bottom-16 left-4">
                   <div className="w-32 rounded-full relative group/avatar">
                     <img
-                      src={
-                        profileImg ||
-                        user?.profileImg ||
-                        "/avatar-placeholder.png"
-                      }
+                      src={profileImg || user?.profileImg || "/deepti.avif"}
                     />
-                    <div className="absolute top-5 right-3 p-1 bg-primary rounded-full group-hover/avatar:opacity-100 opacity-0 cursor-pointer">
+                    <div className="absolute top-5 right-3 p-1 bg-primary rounded-full group-hover avatar:opacity-100 opacity-0 cursor-pointer">
                       {isMyProfile && (
                         <RiEditBoxLine
                           className="w-4 h-4 text-white"
@@ -168,11 +164,15 @@ const ProfilePage = () => {
                     className="btn btn-primary rounded-full btn-sm text-white px-4 ml-2"
                     onClick={async () => {
                       await updateProfile({ coverImg, profileImg });
-                      setCoverImg(null);
                       setProfileImg(null);
+                      setCoverImg(null);
                     }}
                   >
-                    {isUpdatingProfile ? <LoadingSpinner size="sm" /> : "Save"}
+                    {isUpdatingProfile ? (
+                      <LoadingSpinner size="sm" />
+                    ) : (
+                      "Update"
+                    )}
                   </button>
                 )}
               </div>
@@ -197,7 +197,7 @@ const ProfilePage = () => {
                           rel="noreferrer"
                           className="text-sm text-blue-500 hover:underline"
                         >
-                          youtube.com/@spherisoft
+                          {user?.link}
                         </a>
                       </>
                     </div>
@@ -253,4 +253,5 @@ const ProfilePage = () => {
     </>
   );
 };
+
 export default ProfilePage;

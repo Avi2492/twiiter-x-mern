@@ -125,4 +125,5 @@ const EditProfileModal = ({ authUser }) => {
     </>
   );
 };
+
 export default EditProfileModal;

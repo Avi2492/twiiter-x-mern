@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { v2 as cloudinary } from "cloudinary";
-import User from "../models/user.model.js";
 import Notification from "../models/notification.model.js";
+import User from "../models/user.model.js";
 
 export const getUserProfile = async (req, res) => {
   const { username } = req.params;
@@ -98,7 +98,8 @@ export const updateUser = async (req, res) => {
   const { fullName, email, username, currentPassword, newPassword, bio, link } =
     req.body;
 
-  let { profileImg, coverImg } = req.user._id;
+  let { profileImg, coverImg } = req.body;
+
   const userId = req.user._id;
 
   try {

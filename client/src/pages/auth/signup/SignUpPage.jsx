@@ -18,6 +18,7 @@ const SignUpPage = () => {
     fullName: "",
     password: "",
   });
+
   const navigate = useNavigate();
 
   const { mutate, isError, isPending, error } = useMutation({
